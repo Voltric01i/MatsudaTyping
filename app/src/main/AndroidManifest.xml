@@ -12,7 +12,8 @@
         <activity
             android:name=".matsuda_typing"
             android:label="@string/title_activity_matsuda_typing"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="landscape">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

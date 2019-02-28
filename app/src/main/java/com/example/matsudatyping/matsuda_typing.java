@@ -1,12 +1,14 @@
 package com.example.matsudatyping;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -17,21 +19,37 @@ import java.util.RandomAccess;
 
 public class matsuda_typing extends AppCompatActivity {
 
+    final int QUIZ_DEADTIME = 3;
+    final int QUIZ_TOTALTIME = 60;
+
     int port = 10000;
     TextView QuizBoxJapanese;
     TextView QuizBoxRoman;
+    TextView RemainingTime;
+    int quizTime = QUIZ_TOTALTIME;
+    int missCount = 3;
+    int clearCount = 0;
+
+    Handler quizTimeHandler;
+    Runnable qtr;
+    Handler GameTimeHandler;
+    Runnable gtr;
+
+
 
     Matsuda quiz[] = {
             new Matsuda("寿司","sushi"),
-            new Matsuda("進捗どうですか","shintyokudoudesuka")};
+            new Matsuda("進捗どうですか","shintyokudoudesuka"),
+            new Matsuda("こたつ","kotatsu"),
+            new Matsuda("お掃除ロボット","osouzirobotto" )};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_matsuda_typing);
         QuizBoxJapanese = findViewById(R.id.text_type_japanese);
-        QuizBoxJapanese = findViewById(R.id.text_type_roman);
-
+        QuizBoxRoman = findViewById(R.id.text_type_roman);
+        RemainingTime = findViewById(R.id.remainingTimeText);
 
     }
 
@@ -40,9 +58,71 @@ public class matsuda_typing extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         udpReceive();
+        startGame();
 
     }
 
+    public void startGame(){
+
+        GameTimeHandler = new Handler();
+        gtr = new Runnable(){
+            @Override
+            public void run() {
+                RemainingTime.setText(String.format("%02d", quizTime));
+                if(quizTime == 0){
+                    endPopUp();
+                    return;
+                    //END
+                }else {
+                    quizTime--;
+                }
+                GameTimeHandler.postDelayed(this, 1000);
+
+            }
+        };
+        GameTimeHandler.post(gtr);
+
+
+        quizTimeHandler = new Handler();
+        qtr = new Runnable(){
+            int quizTimeCount = QUIZ_DEADTIME;
+            @Override
+            public void run() {
+                    if((missCount == 0)){
+                        endPopUp();
+                        return;
+                        //END
+                    }
+
+                    if(quizTimeCount == 0){
+                        quizTimeCount = QUIZ_DEADTIME;
+                        readNewQuiz();
+                        missCount--;
+                        //MISS
+                    }else  if (QuizBoxRoman.length() == 0){
+                        quizTimeCount = QUIZ_DEADTIME;
+                        readNewQuiz();
+                        clearCount++;
+                        //CLEAR
+                    }
+                    quizTimeCount--;
+                    quizTimeHandler.postDelayed(this, 1000);
+            }
+
+        };
+        quizTimeHandler.post(qtr);
+
+    }
+
+    public void endPopUp(){
+
+        GameTimeHandler.removeCallbacks(gtr);
+        quizTimeHandler.removeCallbacks(qtr);
+        Toast toast = Toast.makeText(matsuda_typing.this, "終了", Toast.LENGTH_SHORT);
+        toast.show();
+        missCount = QUIZ_DEADTIME;
+        clearCount = 0;
+    }
 
 
 
@@ -55,7 +135,7 @@ public class matsuda_typing extends AppCompatActivity {
         }
     }
     public void readNewQuiz(){
-        Random random = new  Random();
+        Random random = new Random();
         int quizNum = random.nextInt(quiz.length);
         QuizBoxJapanese.setText(quiz[quizNum].japanese);
         QuizBoxRoman.setText(quiz[quizNum].roman);

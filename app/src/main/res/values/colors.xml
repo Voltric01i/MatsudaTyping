@@ -5,4 +5,6 @@
     <color name="colorAccent">#D81B60</color>
     <color name="textBoxBackGround">#CE111111</color>
     <color name="textBoxTextColor">#FFFFFF</color>
+    <color name="timerBoxGroundLine">#6D4200</color>
+    <color name="timerBoxGround">#AF6900</color>
 </resources>
