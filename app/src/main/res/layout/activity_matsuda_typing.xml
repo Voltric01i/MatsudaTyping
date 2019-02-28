@@ -4,15 +4,38 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/bg_kaitenzushi"
     tools:context=".matsuda_typing">
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/frame_style_dark"
+        android:layout_margin="100dp"
+        android:gravity="center">
+        <TextView
+            android:id="@+id/text_type_japanese"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textSize="80dp"
+            android:textColor="@color/textBoxTextColor"
+            android:text="お寿司"/>
+
+        <TextView
+            android:id="@+id/text_type_roman"
+            android:layout_below="@+id/text_type_japanese"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textSize="50dp"
+            android:textColor="@color/textBoxTextColor"
+            android:text="osushi" />
+    </RelativeLayout>
 
 
 
-    <android.support.v7.widget.AppCompatImageButton
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@drawable/bg_kaitenzushi"/>
+
 
 
 
