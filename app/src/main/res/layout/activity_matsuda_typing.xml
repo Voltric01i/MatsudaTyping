@@ -4,78 +4,98 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/bg_kaitenzushi"
+    android:background="@color/matsudaBackground"
     tools:context=".matsuda_typing">
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/timer_layout"
-            android:background="@drawable/flame_style_wood">
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:layout_marginLeft="20dp"
-                android:layout_marginBottom="20dp"
-                android:fontFamily="sans-serif-light"
-                android:text="残り"
-                android:textColor="@color/textBoxBackGround"
-                android:textSize="60dp"/>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/remainingTimeText"
-                android:layout_marginTop="20dp"
-                android:layout_marginBottom="20dp"
-                android:fontFamily="sans-serif-light"
-                android:text="090"
-                android:textColor="@color/textBoxBackGround"
-                android:textSize="60dp"/>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-
-                android:layout_marginBottom="20dp"
-                android:fontFamily="sans-serif-light"
-                android:text="秒"
-                android:textColor="@color/textBoxBackGround"
-                android:textSize="60dp"/>
-        </LinearLayout>
-
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@id/timer_layout"
-            android:id="@+id/mastuda_popup"
-            android:background="@drawable/frame_style_dark"
-            android:layout_margin="100dp"
-            android:gravity="center">
-            <TextView
-                android:id="@+id/text_type_japanese"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:textSize="80dp"
-                android:textColor="@color/textBoxTextColor"
-                android:text="お寿司"/>
+            android:id="@+id/remainingTime_layout">
 
-            <TextView
-                android:id="@+id/text_type_roman"
-                android:layout_below="@+id/text_type_japanese"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center"
-                android:textSize="50dp"
-                android:textColor="@color/textBoxTextColor"
-                android:text="osushi" />
+                android:id="@+id/timer_layout"
+                android:background="@drawable/flame_style_wood">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginBottom="20dp"
+                    android:text="残り"
+                    android:textColor="@color/textBoxBackGround"
+                    android:textSize="40dp"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/remainingTimeText"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginBottom="20dp"
+                    android:text="090"
+                    android:textColor="@color/textBoxBackGround"
+                    android:textSize="40dp"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginBottom="20dp"
+                    android:text="秒"
+                    android:textColor="@color/textBoxBackGround"
+                    android:textSize="40dp"/>
+            </LinearLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@id/timer_layout"
+                android:gravity="center">
+                <ImageView
+                    android:layout_width="2000dp"
+                    android:layout_height="2000dp"
+                    android:layout_marginBottom="210dp"
+                    android:background="@color/textBoxTextColor"
+                    android:src="@drawable/akami"/>
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@id/timer_layout"
+                android:id="@+id/mastuda_popup"
+                android:background="@drawable/frame_style_dark"
+                android:layout_marginTop="250dp"
+                android:layout_marginLeft="200dp"
+                android:layout_marginRight="200dp"
+                android:layout_marginBottom="20dp"
+                android:gravity="center">
+
+                <TextView
+                    android:id="@+id/text_type_japanese"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:textSize="60dp"
+                    android:textColor="@color/textBoxTextColor"
+                    android:text="お寿司"/>
+
+                <TextView
+                    android:id="@+id/text_type_roman"
+                    android:layout_below="@+id/text_type_japanese"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:textSize="45dp"
+                    android:textColor="@color/textBoxTextColor"
+                    android:text="osushi" />
+            </RelativeLayout>
         </RelativeLayout>
     </RelativeLayout>
+
 
 
 

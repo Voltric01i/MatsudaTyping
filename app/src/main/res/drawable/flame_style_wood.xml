@@ -5,8 +5,8 @@
     <!-- 背景色 -->
     <solid android:color="@color/timerBoxGround" />
 
-    <!-- 角の丸み -->
-    <corners android:radius="3dp" />
+
+
 
     <stroke
         android:width="9dp"

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/flame_style_wood"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="200dp"
+        android:gravity="center">
+        <TextView
+            android:id="@+id/description_text1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:gravity="center"
+            android:textSize="25dp"
+            android:text = "タイピング中はキーボードを使います"
+            android:textColor="@color/textBoxBackGround"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"/>
+
+        <TextView
+            android:id="@+id/description_text2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_marginTop="30dp"
+            android:layout_below="@+id/description_text1"
+            android:textSize="25dp"
+            android:textColor="@color/textColorAlert"
+            android:text = "【スペースかEnterキーを押すとスタートします】"
+            android:clickable="true"
+            android:onClick="testToast"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"/>
+    </RelativeLayout>
+
+
+
+
+</android.support.constraint.ConstraintLayout>
