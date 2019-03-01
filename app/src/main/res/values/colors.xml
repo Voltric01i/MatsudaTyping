@@ -7,6 +7,8 @@
     <color name="textBoxTextColor">#FFFFFF</color>
     <color name="timerBoxGroundLine">#9E5F01</color>
     <color name="timerBoxGround">#DD8400</color>
-    <color name="textColorAlert">#970000</color>
+    <color name="textColorAlert">#AA0000</color>
     <color name="matsudaBackground">#D7E060</color>
+    <color name="resultBackground">#5F5959</color>
+    <color name="resultTextColor">#686868</color>
 </resources>

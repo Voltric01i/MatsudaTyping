@@ -12,17 +12,19 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_margin="200dp"
+        android:layout_margin="40dp"
+        android:background="@color/textBoxTextColor"
         android:gravity="center">
         <TextView
             android:id="@+id/description_text1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="10dp"
             android:gravity="center"
-            android:textSize="25dp"
-            android:text = "タイピング中はキーボードを使います"
-            android:textColor="@color/textBoxBackGround"
+            android:textSize="30dp"
+            android:textColor="@color/textBoxTextColor"
+            android:text = "お手軽松打コース3000円"
+            android:background="@color/resultBackground"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"/>
 
@@ -34,12 +36,90 @@
             android:layout_marginTop="30dp"
             android:layout_below="@+id/description_text1"
             android:textSize="25dp"
-            android:textColor="@color/textColorAlert"
-            android:text = "【スペースかEnterキーを押すとスタートします】"
-            android:clickable="true"
-            android:onClick="testToast"
+            android:textColor="@color/resultTextColor"
+            android:text = "3000円払って..."
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"/>
+
+        <LinearLayout
+            android:id="@+id/result_layout"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:layout_below="@+id/description_text2"
+            android:layout_marginStart="20dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginBottom="20dp"
+            android:background="@drawable/frame_result_accent">
+
+            <TextView
+                android:id="@+id/description_text3"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:clickable="true"
+                android:gravity="center"
+                android:onClick="testToast"
+                android:text="3000円 得しました"
+                android:textColor="@color/resultTextColor"
+                android:textSize="30dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/result_layout">
+            <RelativeLayout
+                android:layout_width="220dp"
+                android:layout_height="match_parent"
+                android:layout_margin="20dp">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="right"
+                    android:textColor="@color/textColorAlert"
+                    android:id="@+id/result_right_keyinput_description"
+                    android:textSize="20dp"
+                    android:text="正しく打ったキーの数"/>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="right"
+                    android:layout_below="@+id/result_right_keyinput_description"
+                    android:id="@+id/result_right_keyinput"
+                    android:textSize="20dp"
+                    android:text="vadvaeaeveav"/>
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_margin="20dp">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="right"
+                    android:textColor="@color/textColorAlert"
+                    android:id="@+id/result_avg_keyinput_description"
+                    android:textSize="20dp"
+                    android:text="平均キータイプ数"/>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="right"
+                    android:layout_below="@+id/result_avg_keyinput_description"
+                    android:id="@+id/result_avg_keyinput"
+                    android:textSize="20dp"
+                    android:text="vadvaeaeveav"/>
+            </RelativeLayout>
+
+
+        </LinearLayout>
+
+
     </RelativeLayout>
 
 

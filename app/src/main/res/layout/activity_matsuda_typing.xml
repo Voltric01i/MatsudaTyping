@@ -54,9 +54,11 @@
                 android:layout_height="match_parent"
                 android:layout_below="@id/timer_layout"
                 android:gravity="center">
+
                 <ImageView
-                    android:layout_width="2000dp"
-                    android:layout_height="2000dp"
+                    android:layout_width="3000dp"
+                    android:layout_height="3000dp"
+                    android:id="@+id/sushiImageView"
                     android:layout_marginBottom="210dp"
                     android:background="@color/textBoxTextColor"
                     android:src="@drawable/akami"/>
@@ -68,7 +70,7 @@
                 android:layout_below="@id/timer_layout"
                 android:id="@+id/mastuda_popup"
                 android:background="@drawable/frame_style_dark"
-                android:layout_marginTop="250dp"
+                android:layout_marginTop="300dp"
                 android:layout_marginLeft="200dp"
                 android:layout_marginRight="200dp"
                 android:layout_marginBottom="20dp"
@@ -79,7 +81,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:textSize="60dp"
+                    android:textSize="50dp"
                     android:textColor="@color/textBoxTextColor"
                     android:text="お寿司"/>
 
@@ -89,7 +91,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:textSize="45dp"
+                    android:textSize="40dp"
                     android:textColor="@color/textBoxTextColor"
                     android:text="osushi" />
             </RelativeLayout>

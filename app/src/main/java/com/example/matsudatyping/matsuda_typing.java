@@ -8,11 +8,14 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.sax.StartElementListener;
 import android.support.annotation.NonNull;
+import android.support.annotation.VisibleForTesting;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.DisplayMetrics;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -29,15 +32,19 @@ public class matsuda_typing extends AppCompatActivity {
 
     final int QUIZ_DEADTIME = 3;
     final int QUIZ_TOTALTIME = 60;
+    final int SET_MONNY = 3000;
     final static int port = 10000;
+
 
     int quizTime = QUIZ_TOTALTIME;
     int missCount = 3;
     int clearCount = 0;
+    int totalKeyInput = 0;
 
     TextView QuizBoxJapanese;
     TextView QuizBoxRoman;
     TextView RemainingTime;
+    ImageView SushiImage;
 
     Handler quizTimeHandler;
     Runnable qtr;
@@ -51,7 +58,9 @@ public class matsuda_typing extends AppCompatActivity {
             new Matsuda("進捗どうですか","shintyokudoudesuka"),
             new Matsuda("こたつ","kotatsu"),
             new Matsuda("お掃除ロボット","osouzirobotto" ),
-            new Matsuda("魂を燃やす","tamasiiwomoyasu" )};
+            new Matsuda("魂を燃やす","tamasiiwomoyasu" ),
+            new Matsuda("魂を燃やす","tamasiiwomoyasu" ),
+            new Matsuda("これは松打だ","korehamatudada" )};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +69,7 @@ public class matsuda_typing extends AppCompatActivity {
         QuizBoxJapanese = findViewById(R.id.text_type_japanese);
         QuizBoxRoman = findViewById(R.id.text_type_roman);
         RemainingTime = findViewById(R.id.remainingTimeText);
+        SushiImage = findViewById(R.id.sushiImageView);
 
     }
 
@@ -89,12 +99,33 @@ public class matsuda_typing extends AppCompatActivity {
         private AlertDialog dialog ;
         private AlertDialog.Builder alert;
         @Override
+        public void onActivityCreated(Bundle savedInstanceState){
+            super.onActivityCreated(savedInstanceState);
+            Dialog dialog = getDialog();
+
+            //AttributeからLayoutParamsを求める
+            WindowManager.LayoutParams layoutParams = dialog.getWindow().getAttributes();
+
+            //display metricsでdpのもと(?)を作る
+            DisplayMetrics metrics = new DisplayMetrics();
+            getActivity().getWindowManager().getDefaultDisplay().getMetrics(metrics);
+
+            //LayoutParamsにdpを計算して適用(今回は横幅300dp)(※metrics.scaledDensityの返り値はfloat)
+            float dialogWidth = 700 * metrics.scaledDensity;
+            layoutParams.width = (int)dialogWidth;
+
+            //LayoutParamsをセットする
+            dialog.getWindow().setAttributes(layoutParams);
+
+        }
+        @Override
         @NonNull
         public Dialog onCreateDialog(Bundle savedInstanceState) {
 
             alert = new AlertDialog.Builder(getActivity());
             // カスタムレイアウトの生成
             final View alertView = getActivity().getLayoutInflater().inflate(R.layout.dialog_start, null);
+
             new Thread() {
                 @Override
                 public void run(){
@@ -108,7 +139,6 @@ public class matsuda_typing extends AppCompatActivity {
                                 }
                             }
                     );
-
                     try {
                         //waiting = trueの間、ブロードキャストを受け取る
                         while(!Thread.currentThread().isInterrupted()){
@@ -121,11 +151,10 @@ public class matsuda_typing extends AppCompatActivity {
                             //受信バイト数取得
                             int length = packet.getLength();
                             String keyPressed = new String(buf, 0, length);
-                            if((keyPressed.equals(" ")) || (keyPressed.equals("\n"))){
+                            if(keyPressed.equals("@")){
                                 dialog.cancel();
                                 ((matsuda_typing) getActivity()).startGame();
                             }
-
                             receiveUdpSocket.close();
                         }
                     } catch (SocketException e) {
@@ -146,31 +175,71 @@ public class matsuda_typing extends AppCompatActivity {
             return dialog;
         }
     }
+
+    public String getTotalScore(){
+
+        String out = null;
+        if(totalKeyInput >= SET_MONNY){
+            out = String.valueOf((clearCount * 100) -SET_MONNY) + "円" + " 得しました";
+            return out;
+        }else {
+            out = String.valueOf(-1 * ((clearCount * 100) -SET_MONNY)) + "円" + " 損しました";
+            return out;
+        }
+    }
+
+    public String getRightKeyInput(){
+        String out = String.valueOf(clearCount);
+        return out;
+    }
+    public String getAvgKeyInput(){
+        String out = String.valueOf((float) totalKeyInput/QUIZ_TOTALTIME);
+        return out;
+    }
+
 
     public static class EndDialog extends DialogFragment {
 
         private AlertDialog dialog ;
         private AlertDialog.Builder alert;
         @Override
+        public void onActivityCreated(Bundle savedInstanceState){
+            super.onActivityCreated(savedInstanceState);
+            Dialog dialog = getDialog();
+            TextView textResult = dialog.findViewById(R.id.description_text3);
+            TextView textResult1 = dialog.findViewById(R.id.result_right_keyinput);
+            TextView textResult2 = dialog.findViewById(R.id.result_avg_keyinput);
+
+            textResult.setText(((matsuda_typing) getActivity()).getTotalScore());
+            textResult1.setText(((matsuda_typing) getActivity()).getRightKeyInput());
+            textResult2.setText(((matsuda_typing) getActivity()).getAvgKeyInput());
+
+            //AttributeからLayoutParamsを求める
+            WindowManager.LayoutParams layoutParams = dialog.getWindow().getAttributes();
+
+            //display metricsでdpのもと(?)を作る
+            DisplayMetrics metrics = new DisplayMetrics();
+            getActivity().getWindowManager().getDefaultDisplay().getMetrics(metrics);
+
+            //LayoutParamsにdpを計算して適用(今回は横幅300dp)(※metrics.scaledDensityの返り値はfloat)
+            float dialogWidth = 700 * metrics.scaledDensity;
+            layoutParams.width = (int)dialogWidth;
+
+            //LayoutParamsをセットする
+            dialog.getWindow().setAttributes(layoutParams);
+
+        }
+        @Override
         @NonNull
         public Dialog onCreateDialog(Bundle savedInstanceState) {
 
             alert = new AlertDialog.Builder(getActivity());
+
             // カスタムレイアウトの生成
             final View alertView = getActivity().getLayoutInflater().inflate(R.layout.dialog_end, null);
             new Thread() {
                 @Override
                 public void run(){
-                    TextView textDescription = alertView.findViewById(R.id.description_text2);
-                    textDescription.setOnClickListener(
-                            new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    matsuda_typing ma_typing= (matsuda_typing) getActivity();
-                                    ma_typing.reload();
-                                }
-                            }
-                    );
 
                     try {
                         //waiting = trueの間、ブロードキャストを受け取る
@@ -184,7 +253,7 @@ public class matsuda_typing extends AppCompatActivity {
                             //受信バイト数取得
                             int length = packet.getLength();
                             String keyPressed = new String(buf, 0, length);
-                            if((keyPressed.equals(" ")) || (keyPressed.equals("\n"))){
+                            if(keyPressed.equals("@")){
                                 dialog.cancel();
                                 ((matsuda_typing) getActivity()).startGame();
                             }
@@ -211,8 +280,42 @@ public class matsuda_typing extends AppCompatActivity {
     }
 
 
-    public void changeSushiImage(){
+    public void changeSushiImage(ImageView imageView){
+        Random random = new Random();
+        int itemRand = random.nextInt(9);
+        switch (itemRand){
+            case 0:
+                imageView.setImageResource(R.drawable.akami);
+                break;
+            case 1:
+                imageView.setImageResource(R.drawable.asi);
+                break;
+            case 2:
+                imageView.setImageResource(R.drawable.chutoro);
+                break;
+            case 3:
+                imageView.setImageResource(R.drawable.ebi);
+                break;
+            case 4:
+                imageView.setImageResource(R.drawable.ikura);
+                break;
+            case 5:
+                imageView.setImageResource(R.drawable.kazunoko);
+                break;
+            case 6:
+                imageView.setImageResource(R.drawable.ootoro);
+                break;
+            case 7:
+                imageView.setImageResource(R.drawable.tako);
+                break;
+            case 8:
+                imageView.setImageResource(R.drawable.tamago);
+                break;
+            case 9:
+                imageView.setImageResource(R.drawable.tekkamaki);
+                break;
 
+        }
     }
 
     public void reload() {
@@ -262,11 +365,13 @@ public class matsuda_typing extends AppCompatActivity {
 
                     if(quizTimeCount == 0){
                         quizTimeCount = QUIZ_DEADTIME;
+                        changeSushiImage(SushiImage);
                         readNewQuiz();
                         missCount--;
                         //MISS
                     }else  if (QuizBoxRoman.length() == 0){
                         quizTimeCount = QUIZ_DEADTIME;
+                        changeSushiImage(SushiImage);
                         readNewQuiz();
                         clearCount++;
                         //CLEAR
@@ -295,6 +400,7 @@ public class matsuda_typing extends AppCompatActivity {
 
 
     public void onTypeText(String typeText ){
+        totalKeyInput++;
         if(typeText.equals(QuizBoxRoman.getText().toString().substring(0,1)) ){
             QuizBoxRoman.setText(quiz[1].roman.substring(1,QuizBoxRoman.length()));
         }
