@@ -1,5 +1,6 @@
 package com.example.matsudatyping;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
@@ -14,10 +15,12 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -30,28 +33,36 @@ import java.util.RandomAccess;
 
 public class matsuda_typing extends AppCompatActivity {
 
-    final int QUIZ_DEADTIME = 3;
-    final int QUIZ_TOTALTIME = 60;
+    final int QUIZ_DEADTIME = 15;
+    final int QUIZ_TOTALTIME = 180;
     final int SET_MONNY = 3000;
-    final static int port = 10000;
+    final static int port = 34512;
 
 
     int quizTime = QUIZ_TOTALTIME;
-    int missCount = 3;
+    int missCount = 10;
     int clearCount = 0;
     int totalKeyInput = 0;
+
+    int quizNum= 0;
+    int itemRand = 0;
 
     TextView QuizBoxJapanese;
     TextView QuizBoxRoman;
     TextView RemainingTime;
     ImageView SushiImage;
+    private Handler handler = new Handler();
+    private Handler handlerDismiss = new Handler();
 
     Handler quizTimeHandler;
     Runnable qtr;
     Handler GameTimeHandler;
     Runnable gtr;
 
-    String keyPressed = null;
+    private static Handler mHandler = new Handler();
+    private ProgressBar mProgress;
+
+    String keyPressed = "";
 
     Matsuda quiz[] = {
             new Matsuda("あれは寿司だ","arehasushida"),
@@ -79,7 +90,7 @@ public class matsuda_typing extends AppCompatActivity {
         super.onResume();
         hideNavigationBar();
         udpReceive();
-
+        readNewQuiz();
         showStartDialog();
 
     }
@@ -87,6 +98,7 @@ public class matsuda_typing extends AppCompatActivity {
     public void showStartDialog(){
         DialogFragment dialogFragment = new startDialog();
         dialogFragment.show(getFragmentManager(),"next");
+
     }
 
     public void showEndDialog(){
@@ -94,86 +106,10 @@ public class matsuda_typing extends AppCompatActivity {
         dialogFragment.show(getFragmentManager(),"next");
     }
 
-    public static class startDialog extends DialogFragment {
 
-        private AlertDialog dialog ;
-        private AlertDialog.Builder alert;
-        @Override
-        public void onActivityCreated(Bundle savedInstanceState){
-            super.onActivityCreated(savedInstanceState);
-            Dialog dialog = getDialog();
 
-            //AttributeからLayoutParamsを求める
-            WindowManager.LayoutParams layoutParams = dialog.getWindow().getAttributes();
-
-            //display metricsでdpのもと(?)を作る
-            DisplayMetrics metrics = new DisplayMetrics();
-            getActivity().getWindowManager().getDefaultDisplay().getMetrics(metrics);
-
-            //LayoutParamsにdpを計算して適用(今回は横幅300dp)(※metrics.scaledDensityの返り値はfloat)
-            float dialogWidth = 700 * metrics.scaledDensity;
-            layoutParams.width = (int)dialogWidth;
-
-            //LayoutParamsをセットする
-            dialog.getWindow().setAttributes(layoutParams);
-
-        }
-        @Override
-        @NonNull
-        public Dialog onCreateDialog(Bundle savedInstanceState) {
-
-            alert = new AlertDialog.Builder(getActivity());
-            // カスタムレイアウトの生成
-            final View alertView = getActivity().getLayoutInflater().inflate(R.layout.dialog_start, null);
-
-            new Thread() {
-                @Override
-                public void run(){
-                    TextView textDescription = alertView.findViewById(R.id.description_text2);
-                    textDescription.setOnClickListener(
-                            new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    dialog.cancel();
-                                    ((matsuda_typing) getActivity()).startGame();
-                                }
-                            }
-                    );
-                    try {
-                        //waiting = trueの間、ブロードキャストを受け取る
-                        while(!Thread.currentThread().isInterrupted()){
-                            //受信用ソケット
-                            DatagramSocket receiveUdpSocket = new DatagramSocket(port);
-                            byte[] buf = new byte[5];
-                            DatagramPacket packet = new DatagramPacket(buf, buf.length);
-
-                            receiveUdpSocket.receive(packet);
-                            //受信バイト数取得
-                            int length = packet.getLength();
-                            String keyPressed = new String(buf, 0, length);
-                            if(keyPressed.equals("@")){
-                                dialog.cancel();
-                                ((matsuda_typing) getActivity()).startGame();
-                            }
-                            receiveUdpSocket.close();
-                        }
-                    } catch (SocketException e) {
-                        e.printStackTrace();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }.start();
-
-            // ViewをAlertDialog.Builderに追加
-            alert.setView(alertView);
-
-            // Dialogを生成
-            dialog = alert.create();
-            dialog.show();
-
-            return dialog;
-        }
+    public String getKeyPressed() {
+        return keyPressed;
     }
 
     public String getTotalScore(){
@@ -197,6 +133,105 @@ public class matsuda_typing extends AppCompatActivity {
         return out;
     }
 
+    public static class startDialog extends DialogFragment {
+
+        private AlertDialog dialog ;
+        private AlertDialog.Builder alert;
+
+
+        @Override
+        public void onActivityCreated(Bundle savedInstanceState){
+            super.onActivityCreated(savedInstanceState);
+            Dialog dialog = getDialog();
+
+            //AttributeからLayoutParamsを求める
+            WindowManager.LayoutParams layoutParams = dialog.getWindow().getAttributes();
+
+
+            //display metricsでdpのもと(?)を作る
+            DisplayMetrics metrics = new DisplayMetrics();
+            getActivity().getWindowManager().getDefaultDisplay().getMetrics(metrics);
+
+            //LayoutParamsにdpを計算して適用(今回は横幅300dp)(※metrics.scaledDensityの返り値はfloat)
+            float dialogWidth = 700 * metrics.scaledDensity;
+            layoutParams.width = (int)dialogWidth;
+
+            //LayoutParamsをセットする
+            dialog.getWindow().setAttributes(layoutParams);
+
+
+        }
+        @Override
+        @NonNull
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+
+            alert = new AlertDialog.Builder(getActivity());
+            // カスタムレイアウトの生成
+            final View alertView = getActivity().getLayoutInflater().inflate(R.layout.dialog_start, null);
+
+            // Dialogを生成
+            // ViewをAlertDialog.Builderに追加
+            alert.setView(alertView);
+
+            dialog = alert.create();
+            dialog.show();
+
+            TextView textView = alertView.findViewById(R.id.description_text2);
+            textView.setOnClickListener(
+                    new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            dialog.cancel();
+                            ((matsuda_typing) getActivity()).startGame();
+                        }
+                    }
+            );
+
+
+            Thread checkReceive = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    //Threadが動いてる限り回す
+                    while (!Thread.currentThread().isInterrupted()) {
+                        try {
+                            // UDPパケット待ち受け
+                            final DatagramSocket recvUdpSocket = new DatagramSocket(port);
+                            recvUdpSocket.setReuseAddress(true);
+
+                            final byte[] buffer = new byte[2048];
+                            DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
+
+                            // 受信するまでブロック
+                            recvUdpSocket.receive(packet);
+
+                            // 受信したデータをトーストで出力
+                             mHandler.post(new Runnable() {
+                                public void run() {
+                                    try {
+                                        String result = new String(buffer, "UTF-8");
+                                        dialog.cancel();
+                                        ((matsuda_typing) getActivity()).startGame();
+
+                                        recvUdpSocket.close();
+
+                                        //監視しているスレッドを止める
+                                    } catch(IOException e) {
+                                    } finally {
+                                        //ダイアログを消す
+                                        dialog.dismiss();
+                                    }
+                                }
+                            });
+                        } catch (IOException e) {
+
+                        }
+                    }
+                }
+            });
+
+            return dialog;
+        }
+    }
 
     public static class EndDialog extends DialogFragment {
 
@@ -237,39 +272,15 @@ public class matsuda_typing extends AppCompatActivity {
 
             // カスタムレイアウトの生成
             final View alertView = getActivity().getLayoutInflater().inflate(R.layout.dialog_end, null);
-            new Thread() {
-                @Override
-                public void run(){
 
-                    try {
-                        //waiting = trueの間、ブロードキャストを受け取る
-                        while(!Thread.currentThread().isInterrupted()){
-                            //受信用ソケット
-                            DatagramSocket receiveUdpSocket = new DatagramSocket(port);
-                            byte[] buf = new byte[5];
-                            DatagramPacket packet = new DatagramPacket(buf, buf.length);
-
-                            receiveUdpSocket.receive(packet);
-                            //受信バイト数取得
-                            int length = packet.getLength();
-                            String keyPressed = new String(buf, 0, length);
-                            if(keyPressed.equals("@")){
-                                dialog.cancel();
-                                ((matsuda_typing) getActivity()).startGame();
-                            }
-
-                            receiveUdpSocket.close();
-                        }
-                    } catch (SocketException e) {
-                        e.printStackTrace();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }.start();
 
             // ViewをAlertDialog.Builderに追加
             alert.setView(alertView);
+            if(((matsuda_typing) getActivity()).getKeyPressed().equals("@")){
+                dialog.cancel();
+                ((matsuda_typing) getActivity()).startGame();
+                ((matsuda_typing) getActivity()).reload();
+            }
 
             // Dialogを生成
             dialog = alert.create();
@@ -281,8 +292,7 @@ public class matsuda_typing extends AppCompatActivity {
 
 
     public void changeSushiImage(ImageView imageView){
-        Random random = new Random();
-        int itemRand = random.nextInt(9);
+
         switch (itemRand){
             case 0:
                 imageView.setImageResource(R.drawable.akami);
@@ -316,6 +326,13 @@ public class matsuda_typing extends AppCompatActivity {
                 break;
 
         }
+
+        if(itemRand >=  9){
+            itemRand = 0;
+        }else {
+            itemRand++;
+        }
+
     }
 
     public void reload() {
@@ -398,11 +415,10 @@ public class matsuda_typing extends AppCompatActivity {
     }
 
 
-
     public void onTypeText(String typeText ){
         totalKeyInput++;
         if(typeText.equals(QuizBoxRoman.getText().toString().substring(0,1)) ){
-            QuizBoxRoman.setText(quiz[1].roman.substring(1,QuizBoxRoman.length()));
+            QuizBoxRoman.setText(QuizBoxRoman.getText().toString().substring(1,QuizBoxRoman.length()));
         }
         if (QuizBoxRoman.length() == 0){
             readNewQuiz();
@@ -410,10 +426,17 @@ public class matsuda_typing extends AppCompatActivity {
     }
 
     public void readNewQuiz(){
-        Random random = new Random();
-        int quizNum = random.nextInt(quiz.length);
+
+        if(quizNum >=  quiz.length-1){
+            quizNum = 0;
+        }else {
+            quizNum++;
+        }
+
         QuizBoxJapanese.setText(quiz[quizNum].japanese);
         QuizBoxRoman.setText(quiz[quizNum].roman);
+
+
     }
 
 
@@ -426,14 +449,22 @@ public class matsuda_typing extends AppCompatActivity {
                     while(!Thread.currentThread().isInterrupted()){
                         //受信用ソケット
                         DatagramSocket receiveUdpSocket = new DatagramSocket(port);
-                        byte[] buf = new byte[5];
+                        byte[] buf = new byte[1024];
                         DatagramPacket packet = new DatagramPacket(buf, buf.length);
 
                         receiveUdpSocket.receive(packet);
                         //受信バイト数取得
                         int length = packet.getLength();
+                        Log.d("NormalDialog","received" );
                         keyPressed = new String(buf, 0, length);
-                        onTypeText(keyPressed);
+                        Log.d("NormalDialog",keyPressed );
+
+                        mHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                onTypeText(keyPressed);
+                            }
+                        });
 
                         receiveUdpSocket.close();
                     }

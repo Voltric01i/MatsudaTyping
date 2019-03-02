@@ -36,7 +36,7 @@
                     android:id="@+id/remainingTimeText"
                     android:layout_marginTop="20dp"
                     android:layout_marginBottom="20dp"
-                    android:text="090"
+                    android:text="060"
                     android:textColor="@color/textBoxBackGround"
                     android:textSize="40dp"/>
                 <TextView
