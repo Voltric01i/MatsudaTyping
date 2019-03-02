@@ -33,7 +33,7 @@ import java.util.RandomAccess;
 
 public class matsuda_typing extends AppCompatActivity {
 
-    final int QUIZ_DEADTIME = 15;
+    final int QUIZ_DEADTIME = 20;
     final int QUIZ_TOTALTIME = 180;
     final int SET_MONNY = 3000;
     final static int port = 34512;
@@ -70,8 +70,11 @@ public class matsuda_typing extends AppCompatActivity {
             new Matsuda("こたつ","kotatsu"),
             new Matsuda("お掃除ロボット","osouzirobotto" ),
             new Matsuda("魂を燃やす","tamasiiwomoyasu" ),
-            new Matsuda("魂を燃やす","tamasiiwomoyasu" ),
-            new Matsuda("これは松打だ","korehamatudada" )};
+            new Matsuda("これは松打だ","korehamatudada" ),
+            new Matsuda("ヤフー最高","yahu-saikou" ),
+            new Matsuda("タイピング練習","taipingurennsyuu" ),
+            new Matsuda("お寿司よりピザ","osushiyoripiza" ),
+            new Matsuda("ハッピータイピング","happi-taipingu" ),};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

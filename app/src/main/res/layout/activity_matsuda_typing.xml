@@ -81,7 +81,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:textSize="50dp"
+                    android:textSize="60dp"
                     android:textColor="@color/textBoxTextColor"
                     android:text="お寿司"/>
 
@@ -91,7 +91,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:textSize="40dp"
+                    android:textSize="50dp"
                     android:textColor="@color/textBoxTextColor"
                     android:text="osushi" />
             </RelativeLayout>
